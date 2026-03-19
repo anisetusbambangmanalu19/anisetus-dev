@@ -11,6 +11,21 @@ Portfolio website built with HTML, CSS, and JavaScript. This project is ready fo
 ## Local Preview
 Open `index.html` directly in browser, or use a simple local server.
 
+### Run Locally (Windows PowerShell)
+1. Open terminal in project folder.
+2. Run this command:
+
+```powershell
+python -m http.server 5500
+```
+
+3. Open browser:
+`http://localhost:5500`
+
+### Alternative with VS Code Live Server
+1. Install extension **Live Server**.
+2. Right click `index.html` > **Open with Live Server**.
+
 ## Publish (Free) - Recommended: GitHub Pages
 This repository already includes `.github/workflows/deploy.yml` for automatic deployment.
 

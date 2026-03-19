@@ -25,6 +25,15 @@ const fallbackProjects = [
 const projectList = document.getElementById("project-list");
 const lastUpdated = document.getElementById("last-updated");
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function formatDate(isoDate) {
   const date = new Date(isoDate);
   return date.toLocaleDateString("en-GB", {
@@ -41,11 +50,12 @@ function renderProjects(repos) {
     const card = document.createElement("article");
     card.className = "project-card";
 
-    const desc = repo.description || "Repository project on GitHub.";
-    const lang = repo.language || "Multi-stack";
+    const desc = escapeHtml(repo.description || "Repository project on GitHub.");
+    const lang = escapeHtml(repo.language || "Multi-stack");
+    const name = escapeHtml(repo.name);
 
     card.innerHTML = `
-      <h3><a href="${repo.html_url}" target="_blank" rel="noreferrer">${repo.name}</a></h3>
+      <h3><a href="${repo.html_url}" target="_blank" rel="noreferrer noopener">${name}</a></h3>
       <p>${desc}</p>
       <div class="project-meta">
         <span>${lang}</span>
