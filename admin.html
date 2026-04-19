@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Proyek | Anisetus Portfolio</title>
+    <meta name="description" content="Panel admin untuk mengelola proyek dan gambar portfolio." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow-2" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="index.html">Anisetus.dev</a>
+      <nav>
+        <a href="index.html">Lihat Portfolio</a>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <section class="section reveal">
+        <p class="eyebrow">Admin Panel</p>
+        <h1>Kelola Proyek & Foto</h1>
+        <p class="lang-id">
+          Tambahkan proyek baru, upload cover, upload beberapa foto galeri, lalu publish otomatis ke halaman portfolio.
+        </p>
+      </section>
+
+      <section class="section reveal admin-grid">
+        <article class="admin-card">
+          <h2>Login Admin</h2>
+          <p class="lang-id">
+            Masuk menggunakan GitHub OAuth yang tersambung ke Supabase. Tidak perlu membuat email dan password admin terpisah.
+          </p>
+          <p class="mono">Catatan: hanya email admin yang diizinkan bisa mengelola data.</p>
+          <button id="github-login-btn" class="btn btn-primary" type="button">Masuk dengan GitHub</button>
+          <button id="logout-btn" class="btn btn-ghost" type="button" disabled>Keluar</button>
+          <p id="auth-status" class="mono">Belum login</p>
+        </article>
+
+        <article class="admin-card">
+          <h2>Tambah / Edit Proyek</h2>
+          <form id="project-form" class="form-grid">
+            <input type="hidden" id="project-id" />
+            <label>
+              Judul Proyek
+              <input type="text" id="project-title" required placeholder="Contoh: Sistem Retribusi Pasar" />
+            </label>
+            <label>
+              Ringkasan
+              <textarea id="project-summary" rows="4" required placeholder="Deskripsikan hasil, manfaat, dan peran kamu."></textarea>
+            </label>
+            <label>
+              Tech Stack (pisahkan dengan koma)
+              <input type="text" id="project-tech" placeholder="Laravel, PostgreSQL, Docker" />
+            </label>
+            <label>
+              Link GitHub
+              <input type="url" id="project-repo" placeholder="https://github.com/..." />
+            </label>
+            <label>
+              Link Demo
+              <input type="url" id="project-demo" placeholder="https://..." />
+            </label>
+            <label>
+              Urutan Tampil
+              <input type="number" id="project-order" min="0" value="0" />
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="project-published" checked />
+              Publish ke portfolio
+            </label>
+            <label>
+              Cover Proyek
+              <input type="file" id="project-cover" accept="image/*" />
+            </label>
+            <label>
+              Foto Galeri (bisa banyak)
+              <input type="file" id="project-gallery" accept="image/*" multiple />
+            </label>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Simpan Proyek</button>
+              <button type="button" id="reset-form-btn" class="btn btn-ghost">Reset Form</button>
+            </div>
+          </form>
+          <p id="project-form-status" class="mono"></p>
+        </article>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-head">
+          <h2>Daftar Proyek</h2>
+          <button id="refresh-projects-btn" class="btn btn-ghost" type="button">Refresh</button>
+        </div>
+        <div id="admin-project-list" class="admin-project-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Admin Panel Anisetus Portfolio.</p>
+      <p class="mono" id="admin-last-updated"></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

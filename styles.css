@@ -353,9 +353,10 @@ ul {
 .project-grid {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
   gap: 0.9rem;
   align-items: start;
+  justify-content: start;
 }
 
 .project-card {
@@ -373,6 +374,62 @@ ul {
   transform: translateY(-3px);
   border-color: rgba(41, 211, 255, 0.48);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.26);
+}
+
+.project-card-rich {
+  padding: 0;
+  overflow: hidden;
+}
+
+.project-media {
+  width: 100%;
+  height: 220px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(7, 11, 17, 0.75);
+}
+
+.project-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: rgba(7, 11, 17, 0.95);
+  display: block;
+}
+
+.project-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.86rem;
+}
+
+.project-body {
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.project-actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.project-action {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.project-action:hover,
+.project-action:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .cards-grid {
@@ -663,6 +720,118 @@ ul {
   transform: translateX(2px);
 }
 
+.admin-main {
+  width: min(1100px, 92vw);
+  margin: 0 auto;
+  padding: 0.8rem 0 3rem;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-card {
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: rgba(18, 27, 39, 0.78);
+  padding: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.form-grid input,
+.form-grid textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: rgba(8, 13, 20, 0.9);
+  color: var(--text);
+  padding: 0.65rem 0.75rem;
+  font-family: "Sora", sans-serif;
+}
+
+.form-grid input:focus,
+.form-grid textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(41, 211, 255, 0.16);
+}
+
+.checkbox-label {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.checkbox-label input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.admin-project-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-project-card {
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  background: rgba(18, 27, 39, 0.8);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.admin-project-top {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.9rem;
+}
+
+.admin-project-cover {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 0.65rem;
+  border: 1px solid var(--line);
+  object-fit: cover;
+}
+
+.admin-project-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.admin-project-actions {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 900px) {
   .hero {
     min-height: 0;
@@ -712,6 +881,14 @@ ul {
   }
 
   .recruiter-cta {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-project-top {
     grid-template-columns: 1fr;
   }
 }
