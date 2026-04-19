@@ -1,11 +1,17 @@
 const authStatus = document.getElementById("auth-status");
 const githubLoginBtn = document.getElementById("github-login-btn");
 const logoutBtn = document.getElementById("logout-btn");
+
 const projectForm = document.getElementById("project-form");
 const projectFormStatus = document.getElementById("project-form-status");
 const adminProjectList = document.getElementById("admin-project-list");
 const refreshProjectsBtn = document.getElementById("refresh-projects-btn");
 const resetFormBtn = document.getElementById("reset-form-btn");
+
+const settingsForm = document.getElementById("settings-form");
+const settingsStatus = document.getElementById("settings-form-status");
+const loadSettingsBtn = document.getElementById("load-settings-btn");
+
 const adminLastUpdated = document.getElementById("admin-last-updated");
 const ADMIN_EMAILS = ["anisetus@gmail.com", "anisetusm@gmail.com"];
 let currentSession = null;
@@ -35,9 +41,14 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function setStatus(message, isError = false) {
+function setProjectStatus(message, isError = false) {
   projectFormStatus.textContent = message;
   projectFormStatus.style.color = isError ? "#ff9b9b" : "";
+}
+
+function setSettingsStatus(message, isError = false) {
+  settingsStatus.textContent = message;
+  settingsStatus.style.color = isError ? "#ff9b9b" : "";
 }
 
 function getSessionEmail(session) {
@@ -49,14 +60,20 @@ function isAdminSession(session) {
 }
 
 function setAdminControlsEnabled(enabled) {
-  const formFields = projectForm.querySelectorAll("input, textarea, button");
-  formFields.forEach((field) => {
+  const projectFields = projectForm.querySelectorAll("input, textarea, button");
+  projectFields.forEach((field) => {
     if (field.id !== "project-id") {
       field.disabled = !enabled;
     }
   });
 
+  const settingsFields = settingsForm.querySelectorAll("input, textarea, button");
+  settingsFields.forEach((field) => {
+    field.disabled = !enabled;
+  });
+
   refreshProjectsBtn.disabled = !enabled;
+  loadSettingsBtn.disabled = !enabled;
 }
 
 function setAuthStatus(session) {
@@ -89,13 +106,24 @@ function resetProjectForm() {
   document.getElementById("project-published").checked = true;
 }
 
+function fillSettingsForm(settings) {
+  document.getElementById("settings-hero-eyebrow").value = settings?.hero_eyebrow || "";
+  document.getElementById("settings-hero-name").value = settings?.hero_name || "";
+  document.getElementById("settings-hero-bio").value = settings?.hero_bio || "";
+  document.getElementById("settings-focus-title").value = settings?.focus_title || "";
+  document.getElementById("settings-focus-description").value = settings?.focus_description || "";
+  document.getElementById("settings-about-text").value = settings?.about_text || "";
+  document.getElementById("settings-profile-image").value = "";
+}
+
 function ensureConfigured() {
   if (client) {
     return true;
   }
 
   authStatus.textContent = "Supabase belum dikonfigurasi. Isi file supabase-config.js";
-  setStatus("Isi supabase-config.js dulu agar admin bisa dipakai.", true);
+  setProjectStatus("Isi supabase-config.js dulu agar admin bisa dipakai.", true);
+  setSettingsStatus("Isi supabase-config.js dulu agar admin bisa dipakai.", true);
   return false;
 }
 
@@ -104,7 +132,8 @@ function ensureAdminAccess() {
     return true;
   }
 
-  setStatus("Akses ditolak. Hanya akun admin yang diizinkan mengelola proyek.", true);
+  setProjectStatus("Akses ditolak. Hanya akun admin yang diizinkan mengelola proyek.", true);
+  setSettingsStatus("Akses ditolak. Hanya akun admin yang diizinkan mengelola konten.", true);
   return false;
 }
 
@@ -124,19 +153,107 @@ async function uploadImage(file, folder = "covers") {
   return data.publicUrl;
 }
 
-async function createOrUpdateProject(event) {
-  event.preventDefault();
-
-  if (!ensureConfigured()) {
-    return;
-  }
-
-  if (!ensureAdminAccess()) {
+async function loadSiteSettings() {
+  if (!ensureConfigured() || !ensureAdminAccess()) {
     return;
   }
 
   try {
-    setStatus("Menyimpan proyek...");
+    setSettingsStatus("Memuat pengaturan profil...");
+
+    const { data, error } = await client
+      .from("site_settings")
+      .select("id, hero_eyebrow, hero_name, hero_bio, focus_title, focus_description, about_text, profile_image_url")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    fillSettingsForm(data || {});
+    setSettingsStatus("Pengaturan profil berhasil dimuat.");
+  } catch (error) {
+    setSettingsStatus(`Gagal memuat pengaturan: ${error.message}`, true);
+  }
+}
+
+async function saveSiteSettings(event) {
+  event.preventDefault();
+
+  if (!ensureConfigured() || !ensureAdminAccess()) {
+    return;
+  }
+
+  try {
+    setSettingsStatus("Menyimpan pengaturan profil...");
+
+    const profileFile = document.getElementById("settings-profile-image").files[0];
+    const existingSettings = await client
+      .from("site_settings")
+      .select("profile_image_url")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const payload = {
+      id: 1,
+      hero_eyebrow: document.getElementById("settings-hero-eyebrow").value.trim(),
+      hero_name: document.getElementById("settings-hero-name").value.trim(),
+      hero_bio: document.getElementById("settings-hero-bio").value.trim(),
+      focus_title: document.getElementById("settings-focus-title").value.trim(),
+      focus_description: document.getElementById("settings-focus-description").value.trim(),
+      about_text: document.getElementById("settings-about-text").value.trim()
+    };
+
+    if (profileFile) {
+      setSettingsStatus("Menyimpan teks profil... upload foto berjalan setelahnya.");
+    }
+
+    if (existingSettings.data?.profile_image_url && !profileFile) {
+      payload.profile_image_url = existingSettings.data.profile_image_url;
+    }
+
+    const { error } = await client.from("site_settings").upsert(payload, { onConflict: "id" });
+
+    if (error) {
+      throw error;
+    }
+
+    if (profileFile) {
+      try {
+        const uploadedUrl = await uploadImage(profileFile, "profile");
+        const { error: imageUpdateError } = await client
+          .from("site_settings")
+          .update({ profile_image_url: uploadedUrl })
+          .eq("id", 1);
+
+        if (imageUpdateError) {
+          throw imageUpdateError;
+        }
+      } catch (imageError) {
+        setSettingsStatus(`Teks tersimpan, tapi upload foto gagal: ${imageError.message}`, true);
+        document.getElementById("settings-profile-image").value = "";
+        return;
+      }
+
+      document.getElementById("settings-profile-image").value = "";
+    }
+
+    setSettingsStatus("Pengaturan profil berhasil disimpan.");
+  } catch (error) {
+    setSettingsStatus(`Gagal menyimpan pengaturan: ${error.message}`, true);
+  }
+}
+
+async function createOrUpdateProject(event) {
+  event.preventDefault();
+
+  if (!ensureConfigured() || !ensureAdminAccess()) {
+    return;
+  }
+
+  try {
+    setProjectStatus("Menyimpan proyek...");
 
     const projectId = document.getElementById("project-id").value;
     const title = document.getElementById("project-title").value.trim();
@@ -191,7 +308,6 @@ async function createOrUpdateProject(event) {
 
     if (galleryFiles.length && targetProjectId) {
       const rows = [];
-
       for (let index = 0; index < galleryFiles.length; index += 1) {
         const url = await uploadImage(galleryFiles[index], "gallery");
         rows.push({
@@ -208,20 +324,16 @@ async function createOrUpdateProject(event) {
       }
     }
 
-    setStatus("Proyek berhasil disimpan.");
+    setProjectStatus("Proyek berhasil disimpan.");
     resetProjectForm();
     await renderAdminProjects();
   } catch (error) {
-    setStatus(`Gagal menyimpan proyek: ${error.message}`, true);
+    setProjectStatus(`Gagal menyimpan proyek: ${error.message}`, true);
   }
 }
 
 async function deleteProject(projectId) {
-  if (!ensureConfigured()) {
-    return;
-  }
-
-  if (!ensureAdminAccess()) {
+  if (!ensureConfigured() || !ensureAdminAccess()) {
     return;
   }
 
@@ -236,10 +348,33 @@ async function deleteProject(projectId) {
       throw error;
     }
 
-    setStatus("Proyek berhasil dihapus.");
+    setProjectStatus("Proyek berhasil dihapus.");
     await renderAdminProjects();
   } catch (error) {
-    setStatus(`Gagal menghapus proyek: ${error.message}`, true);
+    setProjectStatus(`Gagal menghapus proyek: ${error.message}`, true);
+  }
+}
+
+async function deleteProjectImage(imageId) {
+  if (!ensureConfigured() || !ensureAdminAccess()) {
+    return;
+  }
+
+  const confirmed = window.confirm("Hapus gambar ini dari galeri proyek?");
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const { error } = await client.from("project_images").delete().eq("id", imageId);
+    if (error) {
+      throw error;
+    }
+
+    setProjectStatus("Gambar galeri berhasil dihapus.");
+    await renderAdminProjects();
+  } catch (error) {
+    setProjectStatus(`Gagal menghapus gambar: ${error.message}`, true);
   }
 }
 
@@ -252,7 +387,32 @@ function fillProjectForm(project) {
   document.getElementById("project-demo").value = project.demo_url || "";
   document.getElementById("project-order").value = project.sort_order || 0;
   document.getElementById("project-published").checked = Boolean(project.is_published);
+
+  setProjectStatus("Mode edit aktif. Kamu bisa ubah deskripsi, link, cover, atau tambah foto galeri.");
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderProjectGallery(images) {
+  if (!images?.length) {
+    return '<p class="mono">Belum ada foto galeri.</p>';
+  }
+
+  const sorted = [...images].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+  return `
+    <div class="admin-gallery-grid">
+      ${sorted
+        .map(
+          (image) => `
+            <div class="admin-gallery-item">
+              <img src="${escapeHtml(image.image_url)}" alt="Project gallery" class="admin-gallery-thumb" loading="lazy" />
+              <button class="btn btn-ghost admin-gallery-delete" data-action="delete-image" data-image-id="${image.id}">Hapus Gambar</button>
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+  `;
 }
 
 async function renderAdminProjects() {
@@ -271,7 +431,9 @@ async function renderAdminProjects() {
   try {
     const { data, error } = await client
       .from("projects")
-      .select("id, title, summary, tech_stack, repo_url, demo_url, cover_image_url, is_published, sort_order, updated_at, project_images(id, image_url)")
+      .select(
+        "id, title, summary, tech_stack, repo_url, demo_url, cover_image_url, is_published, sort_order, updated_at, project_images(id, image_url, sort_order)"
+      )
       .order("sort_order", { ascending: true })
       .order("updated_at", { ascending: false });
 
@@ -295,7 +457,6 @@ async function renderAdminProjects() {
       const repoLink = project.repo_url
         ? `<a class="project-action" href="${escapeHtml(project.repo_url)}" target="_blank" rel="noreferrer noopener">GitHub</a>`
         : "";
-
       const demoLink = project.demo_url
         ? `<a class="project-action" href="${escapeHtml(project.demo_url)}" target="_blank" rel="noreferrer noopener">Demo</a>`
         : "";
@@ -303,6 +464,8 @@ async function renderAdminProjects() {
       const coverHtml = project.cover_image_url
         ? `<img src="${escapeHtml(project.cover_image_url)}" alt="Cover ${escapeHtml(project.title)}" class="admin-project-cover" loading="lazy" />`
         : '<div class="admin-project-cover admin-project-cover-placeholder">No Cover</div>';
+
+      const galleryHtml = renderProjectGallery(project.project_images || []);
 
       card.innerHTML = `
         <div class="admin-project-top">
@@ -315,6 +478,7 @@ async function renderAdminProjects() {
             <div class="project-actions">${repoLink}${demoLink}</div>
           </div>
         </div>
+        ${galleryHtml}
         <div class="admin-project-actions">
           <button class="btn btn-ghost" data-action="edit" data-id="${project.id}">Edit</button>
           <button class="btn btn-ghost" data-action="delete" data-id="${project.id}">Hapus</button>
@@ -324,6 +488,10 @@ async function renderAdminProjects() {
       card.querySelector('[data-action="edit"]').addEventListener("click", () => fillProjectForm(project));
       card.querySelector('[data-action="delete"]').addEventListener("click", () => deleteProject(project.id));
 
+      card.querySelectorAll('[data-action="delete-image"]').forEach((button) => {
+        button.addEventListener("click", () => deleteProjectImage(button.dataset.imageId));
+      });
+
       adminProjectList.appendChild(card);
     });
   } catch (error) {
@@ -331,7 +499,7 @@ async function renderAdminProjects() {
   }
 }
 
-async function signIn(event) {
+async function signIn() {
   if (!ensureConfigured()) {
     return;
   }
@@ -370,16 +538,27 @@ async function bootstrap() {
 
   if (!hasConfig()) {
     authStatus.textContent = "Isi supabase-config.js terlebih dahulu.";
-    setStatus("Supabase belum aktif. Jalankan setup lalu isi URL + anon key.", true);
+    setProjectStatus("Supabase belum aktif. Jalankan setup lalu isi URL + anon key.", true);
+    setSettingsStatus("Supabase belum aktif. Jalankan setup lalu isi URL + anon key.", true);
     return;
   }
 
   const { data } = await client.auth.getSession();
   setAuthStatus(data.session);
-  await renderAdminProjects();
 
-  client.auth.onAuthStateChange((_event, session) => {
+  if (isAdminSession(data.session)) {
+    await Promise.all([loadSiteSettings(), renderAdminProjects()]);
+  }
+
+  client.auth.onAuthStateChange(async (_event, session) => {
     setAuthStatus(session);
+
+    if (isAdminSession(session)) {
+      await Promise.all([loadSiteSettings(), renderAdminProjects()]);
+      return;
+    }
+
+    adminProjectList.innerHTML = '<p class="mono">Login dengan akun admin untuk melihat dan mengelola daftar proyek.</p>';
   });
 }
 
@@ -389,7 +568,9 @@ projectForm.addEventListener("submit", createOrUpdateProject);
 refreshProjectsBtn.addEventListener("click", renderAdminProjects);
 resetFormBtn.addEventListener("click", () => {
   resetProjectForm();
-  setStatus("Form direset.");
+  setProjectStatus("Form proyek direset.");
 });
+settingsForm.addEventListener("submit", saveSiteSettings);
+loadSettingsBtn.addEventListener("click", loadSiteSettings);
 
 bootstrap();

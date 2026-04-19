@@ -96,6 +96,45 @@
 
       <section class="section reveal">
         <div class="section-head">
+          <h2>Pengaturan Profil & Konten</h2>
+          <button id="load-settings-btn" class="btn btn-ghost" type="button">Muat Data</button>
+        </div>
+        <form id="settings-form" class="form-grid settings-form">
+          <label>
+            Tagline Hero
+            <input type="text" id="settings-hero-eyebrow" placeholder="Backend Engineer | Full Stack Developer | Siap Magang" />
+          </label>
+          <label>
+            Nama Besar Hero
+            <input type="text" id="settings-hero-name" placeholder="Nama lengkap" />
+          </label>
+          <label>
+            Deskripsi Hero
+            <textarea id="settings-hero-bio" rows="4" placeholder="Deskripsi utama di halaman depan"></textarea>
+          </label>
+          <label>
+            Judul Fokus
+            <input type="text" id="settings-focus-title" placeholder="Contoh: Pengembangan Full-Stack" />
+          </label>
+          <label>
+            Deskripsi Fokus
+            <textarea id="settings-focus-description" rows="4" placeholder="Penjelasan fokus saat ini"></textarea>
+          </label>
+          <label>
+            Tentang Saya
+            <textarea id="settings-about-text" rows="5" placeholder="Isi bagian Tentang Saya"></textarea>
+          </label>
+          <label>
+            Foto Profil Baru
+            <input type="file" id="settings-profile-image" accept="image/*" />
+          </label>
+          <button type="submit" class="btn btn-primary">Simpan Pengaturan Profil</button>
+          <p id="settings-form-status" class="mono"></p>
+        </form>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-head">
           <h2>Daftar Proyek</h2>
           <button id="refresh-projects-btn" class="btn btn-ghost" type="button">Refresh</button>
         </div>

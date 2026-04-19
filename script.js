@@ -6,7 +6,8 @@ const fallbackProjects = [
     repo_url: "https://github.com/anisetusbambangmanalu19/movie-reservation-backend",
     demo_url: "",
     cover_image_url: "",
-    updated_at: "2026-03-19T09:20:24Z"
+    updated_at: "2026-03-19T09:20:24Z",
+    project_images: []
   },
   {
     title: "Task Management System",
@@ -15,7 +16,8 @@ const fallbackProjects = [
     repo_url: "https://github.com/anisetusbambangmanalu19/Task-Management-System",
     demo_url: "",
     cover_image_url: "",
-    updated_at: "2026-02-19T07:14:08Z"
+    updated_at: "2026-02-19T07:14:08Z",
+    project_images: []
   },
   {
     title: "Sistem Informasi Sekolah",
@@ -24,12 +26,34 @@ const fallbackProjects = [
     repo_url: "https://github.com/anisetusbambangmanalu19/ProyekAkhir1_Kel11",
     demo_url: "",
     cover_image_url: "",
-    updated_at: "2025-12-08T14:16:14Z"
+    updated_at: "2025-12-08T14:16:14Z",
+    project_images: []
   }
 ];
 
+const fallbackSiteSettings = {
+  hero_eyebrow: "Backend Engineer | Full Stack Developer | Siap Magang",
+  hero_name: "Anisetus Bambang Manalu",
+  hero_bio:
+    "Mahasiswa tingkat akhir Teknologi Rekayasa Perangkat Lunak di Institut Teknologi Del. Saya membangun sistem API-first dengan arsitektur rapi, desain database production-ready, dan autentikasi yang aman untuk kebutuhan nyata.",
+  focus_title: "Pengembangan Full-Stack",
+  focus_description:
+    "Ahli dalam membangun backend dengan Laravel dan Node.js, frontend modern menggunakan Next.js/React, serta aplikasi mobile lintas platform dengan Flutter. Didukung oleh PostgreSQL dan Docker.",
+  about_text:
+    "Saya memiliki pengalaman langsung membangun sistem digital untuk kebutuhan nyata, mulai dari platform retribusi pasar, sistem administrasi sekolah, hingga platform booking. Saya menikmati proses mengubah alur kerja kompleks menjadi software yang terstruktur dan mudah dipelihara.",
+  profile_image_url: ""
+};
+
 const projectList = document.getElementById("project-list");
 const lastUpdated = document.getElementById("last-updated");
+
+const heroEyebrow = document.getElementById("hero-eyebrow");
+const heroName = document.getElementById("hero-name");
+const heroBio = document.getElementById("hero-bio");
+const focusTitle = document.getElementById("focus-title");
+const focusDescription = document.getElementById("focus-description");
+const aboutText = document.getElementById("about-text");
+const profileImage = document.getElementById("profile-image");
 
 function escapeHtml(value) {
   return String(value)
@@ -50,12 +74,64 @@ function formatDate(isoDate) {
 }
 
 function buildTechTags(rawTech) {
-  const tags = String(rawTech || "").split(",").map((item) => item.trim()).filter(Boolean);
+  const tags = String(rawTech || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
   if (!tags.length) {
     return "<span>Multi-stack</span>";
   }
 
-  return tags.slice(0, 4).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+  return tags
+    .slice(0, 4)
+    .map((tag) => `<span>${escapeHtml(tag)}</span>`)
+    .join("");
+}
+
+function hasSupabaseConfig() {
+  return Boolean(window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey);
+}
+
+function getSupabaseClient() {
+  return window.supabase.createClient(
+    window.SUPABASE_CONFIG.url,
+    window.SUPABASE_CONFIG.anonKey
+  );
+}
+
+function applySiteSettings(settings) {
+  const merged = {
+    ...fallbackSiteSettings,
+    ...(settings || {})
+  };
+
+  heroEyebrow.textContent = merged.hero_eyebrow;
+  heroName.textContent = merged.hero_name;
+  heroBio.textContent = merged.hero_bio;
+  focusTitle.textContent = merged.focus_title;
+  focusDescription.textContent = merged.focus_description;
+  aboutText.textContent = merged.about_text;
+
+  if (merged.profile_image_url) {
+    profileImage.src = merged.profile_image_url;
+  }
+}
+
+function renderGalleryPreview(images, title) {
+  if (!images.length) {
+    return "";
+  }
+
+  const thumbs = images
+    .slice(0, 3)
+    .map(
+      (image) =>
+        `<img src="${escapeHtml(image.image_url)}" alt="Galeri ${escapeHtml(title)}" loading="lazy" class="project-gallery-thumb" />`
+    )
+    .join("");
+
+  return `<div class="project-gallery-preview">${thumbs}</div>`;
 }
 
 function renderProjects(projects, sourceLabel) {
@@ -71,20 +147,28 @@ function renderProjects(projects, sourceLabel) {
     card.className = "project-card project-card-rich";
 
     const title = escapeHtml(project.title || project.name || "Untitled Project");
-    const summary = escapeHtml(project.summary || project.description || "Deskripsi proyek belum tersedia.");
+    const summary = escapeHtml(
+      project.summary || project.description || "Deskripsi proyek belum tersedia."
+    );
     const repoUrl = project.repo_url || project.html_url || "#";
     const demoUrl = project.demo_url || "";
-    const coverUrl = project.cover_image_url || "";
     const techTags = buildTechTags(project.tech_stack || project.language);
     const updatedAt = formatDate(project.updated_at || project.pushed_at);
+    const galleryImages = [...(project.project_images || [])].sort(
+      (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+    );
 
-    const mediaHtml = coverUrl
-      ? `<img src="${escapeHtml(coverUrl)}" alt="Preview ${title}" class="project-cover" loading="lazy" />`
+    const imageSource = project.cover_image_url || galleryImages[0]?.image_url || "";
+
+    const mediaHtml = imageSource
+      ? `<img src="${escapeHtml(imageSource)}" alt="Preview ${title}" class="project-cover" loading="lazy" />`
       : '<div class="project-cover project-cover-placeholder">Tidak ada gambar</div>';
 
     const demoLinkHtml = demoUrl
       ? `<a class="project-action" href="${escapeHtml(demoUrl)}" target="_blank" rel="noreferrer noopener">Live Demo</a>`
       : "";
+
+    const galleryPreviewHtml = renderGalleryPreview(galleryImages, title);
 
     card.innerHTML = `
       <div class="project-media">${mediaHtml}</div>
@@ -100,6 +184,7 @@ function renderProjects(projects, sourceLabel) {
           <a class="project-action" href="${escapeHtml(repoUrl)}" target="_blank" rel="noreferrer noopener">GitHub</a>
           ${demoLinkHtml}
         </div>
+        ${galleryPreviewHtml}
       </div>
     `;
 
@@ -107,19 +192,31 @@ function renderProjects(projects, sourceLabel) {
   });
 }
 
-function hasSupabaseConfig() {
-  return Boolean(window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey);
+async function loadSiteSettingsFromSupabase() {
+  const client = getSupabaseClient();
+  const { data, error } = await client
+    .from("site_settings")
+    .select(
+      "hero_eyebrow, hero_name, hero_bio, focus_title, focus_description, about_text, profile_image_url"
+    )
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 }
 
 async function loadProjectsFromSupabase() {
-  const client = window.supabase.createClient(
-    window.SUPABASE_CONFIG.url,
-    window.SUPABASE_CONFIG.anonKey
-  );
+  const client = getSupabaseClient();
 
   const { data, error } = await client
     .from("projects")
-    .select("id, title, summary, tech_stack, repo_url, demo_url, cover_image_url, updated_at")
+    .select(
+      "id, title, summary, tech_stack, repo_url, demo_url, cover_image_url, updated_at, project_images(id, image_url, sort_order)"
+    )
     .eq("is_published", true)
     .order("sort_order", { ascending: true })
     .order("updated_at", { ascending: false });
@@ -148,8 +245,23 @@ async function loadProjectsFromGitHubFallback() {
     tech_stack: repo.language,
     repo_url: repo.html_url,
     updated_at: repo.pushed_at,
-    cover_image_url: ""
+    cover_image_url: "",
+    project_images: []
   }));
+}
+
+async function loadSiteContent() {
+  try {
+    if (hasSupabaseConfig()) {
+      const settings = await loadSiteSettingsFromSupabase();
+      applySiteSettings(settings || fallbackSiteSettings);
+      return;
+    }
+
+    applySiteSettings(fallbackSiteSettings);
+  } catch (_error) {
+    applySiteSettings(fallbackSiteSettings);
+  }
 }
 
 async function loadProjects() {
@@ -177,4 +289,5 @@ lastUpdated.textContent = `Updated ${new Date().toLocaleDateString("id-ID", {
   year: "numeric"
 })}`;
 
+loadSiteContent();
 loadProjects();

@@ -25,6 +25,22 @@ create table if not exists public.project_images (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.site_settings (
+  id int primary key default 1 check (id = 1),
+  hero_eyebrow text,
+  hero_name text,
+  hero_bio text,
+  focus_title text,
+  focus_description text,
+  about_text text,
+  profile_image_url text,
+  updated_at timestamptz not null default now()
+);
+
+insert into public.site_settings (id, hero_eyebrow, hero_name)
+values (1, 'Backend Engineer | Full Stack Developer | Siap Magang', 'Anisetus Bambang Manalu')
+on conflict (id) do nothing;
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -40,8 +56,14 @@ create trigger trg_projects_updated_at
 before update on public.projects
 for each row execute function public.set_updated_at();
 
+drop trigger if exists trg_site_settings_updated_at on public.site_settings;
+create trigger trg_site_settings_updated_at
+before update on public.site_settings
+for each row execute function public.set_updated_at();
+
 alter table public.projects enable row level security;
 alter table public.project_images enable row level security;
+alter table public.site_settings enable row level security;
 
 -- Public read untuk halaman portfolio
 drop policy if exists "Public can read published projects" on public.projects;
@@ -53,6 +75,12 @@ using (is_published = true);
 drop policy if exists "Public can read project images" on public.project_images;
 create policy "Public can read project images"
 on public.project_images
+for select
+using (true);
+
+drop policy if exists "Public can read site settings" on public.site_settings;
+create policy "Public can read site settings"
+on public.site_settings
 for select
 using (true);
 
@@ -73,6 +101,19 @@ with check (
 drop policy if exists "Authenticated can manage project images" on public.project_images;
 create policy "Authenticated can manage project images"
 on public.project_images
+for all
+using (
+  auth.role() = 'authenticated'
+  and lower(coalesce(auth.jwt() ->> 'email', '')) in ('anisetus@gmail.com', 'anisetusm@gmail.com')
+)
+with check (
+  auth.role() = 'authenticated'
+  and lower(coalesce(auth.jwt() ->> 'email', '')) in ('anisetus@gmail.com', 'anisetusm@gmail.com')
+);
+
+drop policy if exists "Authenticated can manage site settings" on public.site_settings;
+create policy "Authenticated can manage site settings"
+on public.site_settings
 for all
 using (
   auth.role() = 'authenticated'
