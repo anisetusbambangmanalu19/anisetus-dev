@@ -99,18 +99,6 @@ function setAuthStatus(session) {
   setAdminControlsEnabled(true);
 }
 
-function clearAuthHashFromUrl() {
-  const hash = window.location.hash || "";
-  if (!hash) {
-    return;
-  }
-
-  if (hash.includes("access_token") || hash.includes("refresh_token") || hash.includes("provider_token")) {
-    const cleanUrl = `${window.location.pathname}${window.location.search}`;
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
-}
-
 function resetProjectForm() {
   projectForm.reset();
   document.getElementById("project-id").value = "";
@@ -516,7 +504,7 @@ async function signIn() {
     return;
   }
 
-  const redirectTo = new URL("admin.html", window.location.href).toString();
+  const redirectTo = `${window.location.origin}${window.location.pathname}`;
   const { error } = await client.auth.signInWithOAuth({
     provider: "github",
     options: {
@@ -547,7 +535,6 @@ async function signOut() {
 async function bootstrap() {
   adminLastUpdated.textContent = `Updated ${nowLabel()}`;
   setAdminControlsEnabled(false);
-  clearAuthHashFromUrl();
 
   if (!hasConfig()) {
     authStatus.textContent = "Isi supabase-config.js terlebih dahulu.";
