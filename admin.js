@@ -1,6 +1,7 @@
 const authStatus = document.getElementById("auth-status");
 const githubLoginBtn = document.getElementById("github-login-btn");
 const logoutBtn = document.getElementById("logout-btn");
+const switchAccountBtn = document.getElementById("switch-account-btn");
 
 const projectForm = document.getElementById("project-form");
 const projectFormStatus = document.getElementById("project-form-status");
@@ -82,6 +83,7 @@ function setAuthStatus(session) {
   if (!session) {
     authStatus.textContent = "Belum login";
     logoutBtn.disabled = true;
+    switchAccountBtn.disabled = true;
     setAdminControlsEnabled(false);
     return;
   }
@@ -90,12 +92,14 @@ function setAuthStatus(session) {
   if (!isAdminSession(session)) {
     authStatus.textContent = `Login sebagai ${email}, tetapi akun ini tidak punya akses admin.`;
     logoutBtn.disabled = false;
+    switchAccountBtn.disabled = false;
     setAdminControlsEnabled(false);
     return;
   }
 
   authStatus.textContent = `Login sebagai ${email}`;
   logoutBtn.disabled = false;
+  switchAccountBtn.disabled = false;
   setAdminControlsEnabled(true);
 }
 
@@ -508,7 +512,10 @@ async function signIn() {
   const { error } = await client.auth.signInWithOAuth({
     provider: "github",
     options: {
-      redirectTo
+      redirectTo,
+      queryParams: {
+        prompt: "login"
+      }
     }
   });
 
@@ -528,8 +535,42 @@ async function signOut() {
     return;
   }
 
+  // Clear all session data
+  localStorage.clear();
+  sessionStorage.clear();
+  
   setAuthStatus(null);
-  authStatus.textContent = "Berhasil logout.";
+  authStatus.textContent = "Berhasil logout. Reload halaman...";
+  
+  // Reload page to clear all cached state and browser session
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
+}
+
+async function switchAccount() {
+  if (!ensureConfigured()) {
+    return;
+  }
+
+  authStatus.textContent = "Logout dan siap switch akun...";
+  
+  const { error } = await client.auth.signOut();
+  if (error) {
+    authStatus.textContent = `Gagal logout: ${error.message}`;
+    return;
+  }
+
+  // Clear all session data
+  localStorage.clear();
+  sessionStorage.clear();
+  
+  setAuthStatus(null);
+  
+  // Immediately trigger login with prompt=login to force account selection
+  setTimeout(() => {
+    signIn();
+  }, 300);
 }
 
 async function bootstrap() {
@@ -564,6 +605,7 @@ async function bootstrap() {
 
 githubLoginBtn.addEventListener("click", signIn);
 logoutBtn.addEventListener("click", signOut);
+switchAccountBtn.addEventListener("click", switchAccount);
 projectForm.addEventListener("submit", createOrUpdateProject);
 refreshProjectsBtn.addEventListener("click", renderAdminProjects);
 resetFormBtn.addEventListener("click", () => {
