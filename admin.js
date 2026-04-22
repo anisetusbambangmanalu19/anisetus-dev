@@ -540,11 +540,15 @@ async function signOut() {
   sessionStorage.clear();
   
   setAuthStatus(null);
-  authStatus.textContent = "Berhasil logout. Reload halaman...";
+  authStatus.textContent = "Logout dari GitHub...";
   
-  // Reload page to clear all cached state and browser session
+  // Redirect to GitHub logout to clear GitHub session
+  // GitHub logout will redirect back to admin.html via return_to parameter
+  const adminUrl = `${window.location.origin}${window.location.pathname}`;
+  const githubLogoutUrl = `https://github.com/logout?return_to=${encodeURIComponent(adminUrl)}`;
+  
   setTimeout(() => {
-    window.location.reload();
+    window.location.href = githubLogoutUrl;
   }, 500);
 }
 
@@ -553,7 +557,7 @@ async function switchAccount() {
     return;
   }
 
-  authStatus.textContent = "Logout dan siap switch akun...";
+  authStatus.textContent = "Logout dari GitHub...";
   
   const { error } = await client.auth.signOut();
   if (error) {
@@ -567,9 +571,13 @@ async function switchAccount() {
   
   setAuthStatus(null);
   
-  // Immediately trigger login with prompt=login to force account selection
+  // Redirect to GitHub logout to clear GitHub session
+  // Then redirect to login page with prompt=login
+  const adminUrl = `${window.location.origin}${window.location.pathname}`;
+  const githubLogoutUrl = `https://github.com/logout?return_to=${encodeURIComponent(adminUrl)}`;
+  
   setTimeout(() => {
-    signIn();
+    window.location.href = githubLogoutUrl;
   }, 300);
 }
 
