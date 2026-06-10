@@ -289,5 +289,20 @@ lastUpdated.textContent = `Updated ${new Date().toLocaleDateString("id-ID", {
   year: "numeric"
 })}`;
 
+// Scroll reveal via IntersectionObserver
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1, rootMargin: "0px 0px -60px 0px" }
+);
+
+document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+
 loadSiteContent();
 loadProjects();

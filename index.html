@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Anisetus Bambang Manalu | Backend & Full Stack Developer</title>
+    <title>Anisetus Bambang Manalu | Backend &amp; Full Stack Developer</title>
     <meta
       name="description"
       content="Portofolio Anisetus Bambang Manalu, Backend dan Full Stack Developer fokus pada Laravel, Flutter, PostgreSQL, dan arsitektur API."
@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -27,6 +27,7 @@
   <body>
     <div class="bg-glow bg-glow-1" aria-hidden="true"></div>
     <div class="bg-glow bg-glow-2" aria-hidden="true"></div>
+
     <header class="site-header">
       <a class="brand" href="#home">Anisetus.dev</a>
       <nav>
@@ -36,17 +37,17 @@
         <a href="#certifications">Sertifikasi</a>
         <a href="#organizations">Organisasi</a>
         <a href="#projects">Proyek</a>
-        <a href="admin.html">Admin</a>
-        <a href="#recruiter">Untuk Recruiter</a>
+        <a href="#recruiter">Recruiter</a>
         <a href="#contact">Kontak</a>
       </nav>
     </header>
 
     <main id="home">
+      <!-- ===== HERO ===== -->
       <section class="hero section">
         <div class="hero-copy">
           <p id="hero-eyebrow" class="eyebrow">Backend Engineer | Full Stack Developer | Siap Magang</p>
-          <h1 id="hero-name">Anisetus Bambang Manalu</h1>
+          <h1 id="hero-name">Anisetus<br /><span class="highlight">Bambang Manalu</span></h1>
           <div class="lead bilingual">
             <p id="hero-bio" class="lang-id">
               Mahasiswa tingkat akhir Teknologi Rekayasa Perangkat Lunak di
@@ -60,30 +61,65 @@
             <a class="btn btn-ghost" href="CV-Anisetus Manalu_backend.pdf" target="_blank" rel="noreferrer noopener">Unduh CV</a>
           </div>
           <ul class="stats" aria-label="Quick highlights">
-            <li><strong>3.50/4.00</strong> GPA</li>
-            <li><strong>2023-2027</strong> Del Institute of Technology</li>
-            <li><strong>118+</strong> contributions this year</li>
+            <li>
+              <strong>2023–2027</strong>
+              <span>Institut Teknologi Del</span>
+            </li>
+            <li>
+              <strong>118+</strong>
+              <span>Kontribusi tahun ini</span>
+            </li>
+            <li>
+              <strong>3+</strong>
+              <span>Proyek production</span>
+            </li>
           </ul>
         </div>
+
         <div class="hero-card">
-          <img
-            id="profile-image"
-            src="saya.jpg"
-            alt="Profile photo of Anisetus Bambang Manalu"
-            class="profile-img"
-          />
-          <div>
-            <p class="mono">Fokus saat ini</p>
-            <h2 id="focus-title">Pengembangan Full-Stack</h2>
-            <p id="focus-description">
-              Ahli dalam membangun backend dengan Laravel dan Node.js, frontend modern
-              menggunakan Next.js/React, serta aplikasi mobile lintas platform dengan
-              Flutter. Didukung oleh PostgreSQL dan Docker.
+          <!-- Avatar kecil, bersih -->
+          <div class="profile-avatar">
+            <img
+              id="profile-image"
+              src="saya.jpg"
+              alt="Anisetus Bambang Manalu"
+              class="profile-img"
+            />
+            <div class="profile-info">
+              <span class="profile-name">Anisetus Manalu</span>
+              <span class="profile-role">Backend · Full Stack</span>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            Tersedia untuk Magang
+          </div>
+
+          <!-- Focus panel -->
+          <div class="focus-panel">
+            <span class="focus-label mono">Fokus saat ini</span>
+            <span class="focus-title" id="focus-title">Pengembangan Full-Stack</span>
+            <p class="focus-desc" id="focus-description">
+              Backend Laravel &amp; Node.js, frontend Next.js/React,
+              mobile Flutter — didukung PostgreSQL dan Docker.
             </p>
+          </div>
+
+          <!-- Stack pills -->
+          <div class="stack-pills">
+            <span class="stack-pill">Laravel</span>
+            <span class="stack-pill">Flutter</span>
+            <span class="stack-pill">PostgreSQL</span>
+            <span class="stack-pill">Go</span>
+            <span class="stack-pill">Docker</span>
+            <span class="stack-pill">React</span>
           </div>
         </div>
       </section>
 
+      <!-- ===== ABOUT ===== -->
       <section id="about" class="section reveal">
         <h2>Tentang Saya</h2>
         <div class="bilingual">
@@ -97,6 +133,7 @@
         </div>
       </section>
 
+      <!-- ===== SKILLS ===== -->
       <section id="skills" class="section reveal">
         <h2>Keahlian Teknis</h2>
         <div class="chip-grid">
@@ -120,48 +157,52 @@
         </div>
       </section>
 
+      <!-- ===== EXPERIENCE ===== -->
       <section id="experience" class="section reveal">
         <h2>Pengalaman</h2>
-        <article class="timeline-item">
-          <div class="timeline-meta">
-            <p class="mono">Jan 2026 - Sekarang</p>
-            <h3>Proyek Layanan Digital North Tapanuli</h3>
-            <p>Full Stack Developer</p>
-          </div>
-          <ul>
-            <li>Membangun layanan backend untuk manajemen retribusi pasar digital.</li>
-            <li>Mengembangkan REST APIs dengan Laravel dan model relasional di PostgreSQL.</li>
-            <li>Implementasi autentikasi berbasis JWT dan akses API yang aman.</li>
-          </ul>
-        </article>
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="timeline-meta">
+              <p class="mono">Jan 2026 – Sekarang</p>
+              <h3>Proyek Layanan Digital North Tapanuli</h3>
+              <p>Full Stack Developer</p>
+            </div>
+            <ul>
+              <li>Membangun layanan backend untuk manajemen retribusi pasar digital.</li>
+              <li>Mengembangkan REST APIs dengan Laravel dan model relasional di PostgreSQL.</li>
+              <li>Implementasi autentikasi berbasis JWT dan akses API yang aman.</li>
+            </ul>
+          </article>
 
-        <article class="timeline-item">
-          <div class="timeline-meta">
-            <p class="mono">Highlight Proyek</p>
-            <h3>Platform Retribusi Pasar TAPATUPA</h3>
-            <p>Backend Developer</p>
-          </div>
-          <ul>
-            <li>Merancang APIs berbasis microservice dengan Laravel dan Docker.</li>
-            <li>Implementasi arsitektur database-first dengan fungsi PostgreSQL.</li>
-            <li>Integrasi layanan melalui gateway Nginx dan autentikasi JWT.</li>
-          </ul>
-        </article>
+          <article class="timeline-item">
+            <div class="timeline-meta">
+              <p class="mono">Highlight Proyek</p>
+              <h3>Platform Retribusi Pasar TAPATUPA</h3>
+              <p>Backend Developer</p>
+            </div>
+            <ul>
+              <li>Merancang APIs berbasis microservice dengan Laravel dan Docker.</li>
+              <li>Implementasi arsitektur database-first dengan fungsi PostgreSQL.</li>
+              <li>Integrasi layanan melalui gateway Nginx dan autentikasi JWT.</li>
+            </ul>
+          </article>
+        </div>
       </section>
 
+      <!-- ===== CERTIFICATIONS ===== -->
       <section id="certifications" class="section reveal">
-        <h2>Sertifikasi & Penghargaan</h2>
+        <h2>Sertifikasi &amp; Penghargaan</h2>
         <div class="cards-grid">
           <article class="info-card">
             <p class="mono">Penghargaan Nasional</p>
-            <h3>Silver Award - PEDAS 2025 (APTIKOM)</h3>
+            <h3>Silver Award – PEDAS 2025 (APTIKOM)</h3>
             <p>
               Pengakuan dari Kompetisi Data Nasional untuk problem solving
               berbasis data dan implementasi model.
             </p>
           </article>
           <article class="info-card">
-            <p class="mono">SanberCode</p>
+            <p class="mono">Sanbercode</p>
             <h3>Sertifikasi Pengembangan Web Laravel</h3>
             <p>
               Pengembangan API backend, implementasi MVC, dan fundamental aplikasi
@@ -187,11 +228,12 @@
         </div>
       </section>
 
+      <!-- ===== ORGANIZATIONS ===== -->
       <section id="organizations" class="section reveal">
         <h2>Pengalaman Organisasi</h2>
         <div class="cards-grid">
           <article class="info-card">
-            <p class="mono">Feb 2024 - Sekarang</p>
+            <p class="mono">Feb 2024 – Sekarang</p>
             <h3>Departemen Kesenian dan Budaya, BEM</h3>
             <p>
               Mengorganisir acara seni dan budaya kampus, berkolaborasi dalam
@@ -199,7 +241,7 @@
             </p>
           </article>
           <article class="info-card">
-            <p class="mono">Nov 2024 - Sekarang</p>
+            <p class="mono">Nov 2024 – Sekarang</p>
             <h3>Del Data Science Club (DSDC)</h3>
             <p>
               Mengikuti workshop dan mini project tentang EDA, machine learning,
@@ -207,7 +249,7 @@
             </p>
           </article>
           <article class="info-card">
-            <p class="mono">Nov 2023 - Nov 2024</p>
+            <p class="mono">Nov 2023 – Nov 2024</p>
             <h3>Del Software Development Club</h3>
             <p>
               Praktik pengembangan software kolaboratif, pembelajaran backend,
@@ -217,6 +259,7 @@
         </div>
       </section>
 
+      <!-- ===== SHOWCASE ===== -->
       <section id="showcase" class="section reveal showcase-section">
         <div class="section-head">
           <h2>Proyek Featured Showcase</h2>
@@ -252,7 +295,7 @@
             </div>
             <div class="showcase-content">
               <p class="mono">Platform Properti Full Stack</p>
-              <h3>Sistem Booking Homestay & Kost</h3>
+              <h3>Sistem Booking Homestay &amp; Kost</h3>
               <p class="showcase-desc">
                 Platform booking properti full-stack dengan REST API Laravel dan
                 aplikasi mobile Flutter. Termasuk filtering lokasi dinamis dan
@@ -285,7 +328,6 @@
                 <span>Laravel</span>
                 <span>MySQL</span>
                 <span>Arsitektur MVC</span>
-                <span>Normalisasi Database</span>
                 <span>Blade Templates</span>
               </div>
               <a href="https://github.com/anisetusbambangmanalu19/ProyekAkhir1_Kel11" class="showcase-link" target="_blank" rel="noreferrer noopener">Lihat Proyek →</a>
@@ -294,6 +336,7 @@
         </div>
       </section>
 
+      <!-- ===== PROJECTS (dynamic) ===== -->
       <section id="projects" class="section reveal">
         <div class="section-head">
           <h2>Pengembangan Terbaru</h2>
@@ -302,6 +345,7 @@
         <div id="project-list" class="project-grid" aria-live="polite"></div>
       </section>
 
+      <!-- ===== RECRUITER ===== -->
       <section id="recruiter" class="section reveal recruiter-cta">
         <div>
           <p class="mono">Untuk Recruiter</p>
@@ -327,6 +371,7 @@
         </div>
       </section>
 
+      <!-- ===== CONTACT ===== -->
       <section id="contact" class="section reveal contact">
         <h2>Mari Bangun Produk yang Bermanfaat</h2>
         <div class="bilingual">
